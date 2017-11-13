@@ -58,6 +58,10 @@ marker = MarkSlack()
 marker.mark('[POLITICO home]<https://www.politico.com>')
 
 # [POLITICO home](https://www.politico.com)
+
+
+# Turn off this syntax
+marker = MarkSlack(slackmark_links=False)
 ```
 
 
