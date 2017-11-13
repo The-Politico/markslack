@@ -2,7 +2,9 @@
 
 # markslack
 
-A simple Slack message to Markdown converter. Handles all text emphasis, emoji, hyperlinks and more.
+A simple Slack message to Markdown converter. Handles text emphasis, hyperlinks, emoji and more.
+
+At POLITICO, we use markslack to translate messages gathered from Slack's API to Markdown.
 
 ### Quickstart
 

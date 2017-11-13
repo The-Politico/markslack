@@ -27,7 +27,7 @@ class MarkSlack(object):
         # [my name]<http://...>
         if self.bracket_link_names:
             self.marked = re.sub(
-                '\[([a-zA-Z ]+)\]<({})>'.format(url_pattern),
+                '\[(.+?)\]<({})>'.format(url_pattern),
                 r'[\1](\2)', self.marked)
         # unnamed hyperlinks
         self.marked = re.sub(
@@ -50,7 +50,7 @@ class MarkSlack(object):
 
     def mark_user(self):
         def sub_user(match):
-            return self.user_map[match.group(1)]
+            return self.user_map.get(match.group(1), match.group(1))
 
         if self.user_map:
             self.marked = re.sub(
