@@ -1,4 +1,5 @@
 import re
+import os
 import emoji
 
 url_pattern = (
@@ -8,30 +9,67 @@ url_pattern = (
 
 
 class MarkSlack(object):
-    def __init__(self, user_map=None, bracket_link_names=True):
-        self.user_map = user_map
-        self.bracket_link_names = bracket_link_names
+    def __init__(
+        self,
+        slackmark_links=True,
+        link_templates=None,
+        user_templates=None,
+        image_template=None,
+        image_extensions=['.jpg', '.png'],
+    ):
+        self.user_templates = user_templates
+        self.slackmark_links = slackmark_links
+        self.image_extensions = image_extensions
+        self.image_template = image_template
+        self.link_templates = link_templates
 
     def mark_emoji(self):
         self.marked = emoji.emojize(self.marked, use_aliases=True)
 
+    def mark_image(self):
+        def sub_image(match):
+            url = match.group(1)
+            extension = os.path.splitext(url)[1]
+            if extension.lower() in self.image_extensions:
+                if self.image_template:
+                    return self.image_template.format(url)
+                return '![]({})'.format(url)
+            return '<{}>'.format(url)
+
+        self.marked = re.sub(
+            '<({})>'.format(url_pattern), sub_image, self.marked)
+
     def mark_channel(self):
         self.marked = re.sub(
-            r'<#[^\|]*\|(.*)>', r'#\1', self.marked)
+            r'<#[a-z-]+\|(.+?)>', r'#\1', self.marked)
 
-    def mark_hyperlink(self):
-        # slack named hyperlinks
+    def mark_named_hyperlink(self):
         self.marked = re.sub(
-            '<({})\|([^\|]*)>'.format(url_pattern), r'[\2](\1)', self.marked)
-        # A markdown-like syntax for named hyperlinks
-        # [my name]<http://...>
-        if self.bracket_link_names:
+            '<({})\|(.+?)>'.format(url_pattern), r'[\2](\1)', self.marked)
+        # Slackmark links use a markdown-like syntax
+        # to allow users to create named hyperlinks.
+        # e.g., [my name]<http://...>
+        if self.slackmark_links:
             self.marked = re.sub(
-                '\[(.+?)\]<({})>'.format(url_pattern),
+                '\[([\w ]+?)\]<({})>'.format(url_pattern),
                 r'[\1](\2)', self.marked)
-        # unnamed hyperlinks
+
+    def mark_unnamed_hyperlink(self):
+        if not self.link_templates:
+            self.marked = re.sub(
+                '<({})>'.format(url_pattern), r'[\1](\1)', self.marked)
+            return
+
+        def sub_link(match):
+            link_keys = list(self.link_templates.keys())
+            url = match.group(1)
+            for key in link_keys:
+                if key in url:
+                    return self.link_templates[key].format(url)
+            return '[{}]({})'.format(url)
+
         self.marked = re.sub(
-            '<({})>'.format(url_pattern), r'[\1](\1)', self.marked)
+            '<({})>'.format(url_pattern), sub_link, self.marked)
 
     def mark_bold(self):
         self.marked = re.sub(
@@ -46,13 +84,19 @@ class MarkSlack(object):
             r'~(.+?)~', r'~~\1~~', self.marked)
 
     def mark_bullet(self):
-        self.marked = re.sub(r'•', '+', self.marked)
+        # Add whitespace if none
+        self.marked = re.sub(r'•([a-zA-Z0-9])', r'+ \1', self.marked)
+        # Preserve whitespace if there
+        self.marked = re.sub(r'•(\s)', r'+\1', self.marked)
 
     def mark_user(self):
         def sub_user(match):
-            return self.user_map.get(match.group(1), match.group(1))
+            return self.user_templates.get(
+                match.group(1),
+                '@{}'.format(match.group(1))
+            )
 
-        if self.user_map:
+        if self.user_templates:
             self.marked = re.sub(
                 r'<@(.+?)>', sub_user, self.marked)
         else:
@@ -63,11 +107,13 @@ class MarkSlack(object):
         self.slack = slack
         self.marked = slack
         self.mark_emoji()
+        self.mark_image()
         self.mark_channel()
-        self.mark_hyperlink()
+        self.mark_named_hyperlink()
+        self.mark_unnamed_hyperlink()
+        self.mark_user()
         self.mark_bold()
         self.mark_italic()
         self.mark_strikethrough()
         self.mark_bullet()
-        self.mark_user()
         return self.marked
