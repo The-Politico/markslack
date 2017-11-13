@@ -19,8 +19,6 @@ setup(
     license='MIT',
     classifiers=[
         'Development Status :: 2 - Pre-Alpha',
-
-        # Indicate who your project is intended for
         'Intended Audience :: Developers',
         'Intended Audience :: Information Technology',
         'License :: OSI Approved :: MIT License',
@@ -33,8 +31,6 @@ setup(
     ],
     keywords='slack markdown',
 
-    # You can just specify the packages manually here if your project is
-    # simple. Or you can use find_packages().
     packages=find_packages(exclude=['contrib', 'docs', 'tests']),
 
     install_requires=['emoji'],
