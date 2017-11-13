@@ -2,7 +2,7 @@
 
 # markslack
 
-A simple Slack message format to Markdown converter. Handles text emphasis, hyperlinks, emoji, custom markup and more.
+A simple Slack message to Markdown converter. Handles text emphasis, hyperlinks, emoji, custom markup and more.
 
 At POLITICO, we use markslack to translate messages pulled from Slack's API into Markdown.
 
@@ -47,7 +47,7 @@ marker.mark('<http://images.com/image.jpg>')
 
 ### Named links
 
-We provide a custom markup syntax for creating named links directly in Slack messaged. Bracket a link name directly preceding a URL to create a named link in Markdown.
+We provide a custom markup syntax for creating named links directly in Slack messages. Bracket a link name directly preceding a URL to create a named link in Markdown.
 
 ```python
 # In Slack, format a named link in a message like this:
@@ -118,4 +118,12 @@ marker.mark('<https://twitter.com/jack/status/20>')
 # <blockquote class="twitter-tweet" data-lang="en">
 # <a href="https://twitter.com/jack/status/20"></a>
 # </blockquote>
+```
+
+### Testing
+
+Testing is done using [pytest](https://docs.pytest.org/en/latest/). To run tests, run pytest.
+
+```
+$ pytest
 ```
