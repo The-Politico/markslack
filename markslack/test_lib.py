@@ -55,7 +55,7 @@ def test_unnamed_hyperlink_with_template():
     )
 
 
-def test_bold():
+def test_emphasis():
     assert marker.mark(
         'a *test* \*of\* *bolding a string* and *extra'
     ) == 'a **test** \*of\* **bolding a string** and \*extra'
@@ -65,19 +65,17 @@ def test_bold():
     ) == 'does\* not\* \*bold'
 
     assert marker.mark(
-        'another* test* *of* *this'
-    ) == 'another\* test\* **of** \*this'
+        'another* test* *of* *bold'
+    ) == 'another\* test\* **of** \*bold'
 
     assert marker.mark(
-        'another* test* *of* *this\n*again*'
-    ) == 'another\* test\* **of** \*this\n**again**'
+        'another* test* *of* *bold\n*and newline*'
+    ) == 'another\* test\* **of** \*bold\n**and newline**'
 
     assert marker.mark(
-        '* another* test* *of* *this\n*again*'
-    ) == '** another** test\* **of** \*this\n**again**'
+        '* spaced* asterisk* \n*newline'
+    ) == '** spaced** asterisk\* \n\*newline'
 
-
-def test_italic():
     assert marker.mark(
         'a _test_ of _italicizing a string_ and _extra'
     ) == 'a *test* of *italicizing a string* and \_extra'
@@ -85,6 +83,14 @@ def test_italic():
     assert marker.mark(
         'does_ not_ _italicize'
     ) == 'does\_ not\_ \_italicize'
+
+    assert marker.mark(
+        '*a *bold* and_ an _italic_'
+    ) == '**a \*bold** and\_ an *italic*'
+
+    assert marker.mark(
+        '*a *bold* and _an _italic_'
+    ) == '**a \*bold** and *an \_italic*'
 
 
 def test_strikethrough():
