@@ -41,7 +41,7 @@ class MarkSlack(object):
 
     def mark_channel(self):
         self.marked = re.sub(
-            r'<#[a-z-]+\|(.+?)>', r'#\1', self.marked)
+            r'<#[a-zA-Z0-9-]+\|(.+?)>', r'#\1', self.marked)
 
     def mark_named_hyperlink(self):
         self.marked = re.sub(
@@ -71,22 +71,39 @@ class MarkSlack(object):
         self.marked = re.sub(
             '<({})>'.format(url_pattern), sub_link, self.marked)
 
-    def mark_bold(self):
-        self.marked = re.sub(
-            r'\*(.+?)\*', r'**\1**', self.marked)
+    def mark_emphasis(self):
+        """
+        Mark bold and italic text.
 
-    def mark_italic(self):
-        self.marked = re.sub(
-            r'_(.+?)_', r'*\1*', self.marked)
+        In order to ensure emphasis marks render the same in Slack and
+        Markdown, we need to escape all underscores and asterisks that
+        don't belong to a matched pair. To do that, we first mark the
+        matched pairs with a placeholder pattern ('|*'), then escape the
+        remaining underscores and asterisks. Finally, we replace the
+        placeholders with asterisks.
+        """
+        # Pattern catches matched pairs
+        regex = r'(?<![\\|a-zA-Z0-9])\{0}(.+?)(?<!\\)\{0}(?![a-zA-Z0-9])'
+        # Replace bold paired asterisks with placeholder
+        self.marked = re.sub(regex.format('*'), r'|*|*\1|*|*', self.marked)
+        # Replace italic paired underscores with placeholder
+        self.marked = re.sub(regex.format('_'), r'|*\1|*', self.marked)
+
+        # Escape unmatched, unescaped asterisks
+        self.marked = re.sub(r'(?<![\|\\])\*', '\*', self.marked)
+        # Escape unmatched, unescaped underscores
+        self.marked = re.sub(r'\_', '\_', self.marked)
+        # Replace matched pair placeholders
+        self.marked = re.sub(r'\|\*', '*', self.marked)
 
     def mark_strikethrough(self):
-        self.marked = re.sub(
-            r'~(.+?)~', r'~~\1~~', self.marked)
+        regex = r'(?<![\\|a-zA-Z0-9])\~(.+?)(?<!\\)\~(?![a-zA-Z0-9])'
+        self.marked = re.sub(regex, r'~~\1~~', self.marked)
 
     def mark_bullet(self):
         # Add whitespace if none
         self.marked = re.sub(r'•([a-zA-Z0-9])', r'+ \1', self.marked)
-        # Preserve whitespace if there
+        # Preserve whitespace
         self.marked = re.sub(r'•(\s)', r'+\1', self.marked)
 
     def mark_user(self):
@@ -97,11 +114,9 @@ class MarkSlack(object):
             )
 
         if self.user_templates:
-            self.marked = re.sub(
-                r'<@(.+?)>', sub_user, self.marked)
+            self.marked = re.sub(r'<@(.+?)>', sub_user, self.marked)
         else:
-            self.marked = re.sub(
-                r'<(@.+?)>', r'\1', self.marked)
+            self.marked = re.sub(r'<(@.+?)>', r'\1', self.marked)
 
     def mark(self, slack):
         self.slack = slack
@@ -112,8 +127,7 @@ class MarkSlack(object):
         self.mark_named_hyperlink()
         self.mark_unnamed_hyperlink()
         self.mark_user()
-        self.mark_bold()
-        self.mark_italic()
+        self.mark_emphasis()
         self.mark_strikethrough()
         self.mark_bullet()
         return self.marked

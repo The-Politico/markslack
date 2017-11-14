@@ -57,20 +57,44 @@ def test_unnamed_hyperlink_with_template():
 
 def test_bold():
     assert marker.mark(
-        'a *test* of *bolding a string* and *extra'
-    ) == 'a **test** of **bolding a string** and *extra'
+        'a *test* \*of\* *bolding a string* and *extra'
+    ) == 'a **test** \*of\* **bolding a string** and \*extra'
+
+    assert marker.mark(
+        'does* not* *bold'
+    ) == 'does\* not\* \*bold'
+
+    assert marker.mark(
+        'another* test* *of* *this'
+    ) == 'another\* test\* **of** \*this'
+
+    assert marker.mark(
+        'another* test* *of* *this\n*again*'
+    ) == 'another\* test\* **of** \*this\n**again**'
+
+    assert marker.mark(
+        '* another* test* *of* *this\n*again*'
+    ) == '** another** test\* **of** \*this\n**again**'
 
 
 def test_italic():
     assert marker.mark(
         'a _test_ of _italicizing a string_ and _extra'
-    ) == 'a *test* of *italicizing a string* and _extra'
+    ) == 'a *test* of *italicizing a string* and \_extra'
+
+    assert marker.mark(
+        'does_ not_ _italicize'
+    ) == 'does\_ not\_ \_italicize'
 
 
 def test_strikethrough():
     assert marker.mark(
         'a ~test~ of ~striking a string~ and ~extra'
     ) == 'a ~~test~~ of ~~striking a string~~ and ~extra'
+
+    assert marker.mark(
+        'does~ not~ ~strikethrough'
+    ) == 'does~ not~ ~strikethrough'
 
 
 def test_bullet():
@@ -133,25 +157,25 @@ def test_complex():
 
     assert marker.mark(
         (
-            'this is a test of *bold* and _italic_ text '
-            'and a named link to <https://www.politico.com|POLITICO> '
-            'and a (:crying_cat_face:) in parens and a :japanese_ogre: '
+            'this is a test of *bold* and _italic_ *text\n'
+            'and a _named link to <https://www.politico.com|POLITICO> '
+            'and a (:crying_cat_face:) in parens and a :japanese_ogre:\n'
             'and a tweet <https://www.twitter.com/tweet/123> '
             'and a [named link]<https://www.politico.com>.\n'
-            'Strike ~this~ through and another *bold* for measure '
+            'Strike ~this~ through ~and another *bold* for measure '
             'and an image <https://images.com/pic.jpg>. '
             'And a channel <#channelid|channel-name>. '
             '\n• Test\n+ A list item\n•And spaced.'
             '\n--<@someuser>'
         )
     ) == (
-        'this is a test of **bold** and *italic* text '
-        'and a named link to [POLITICO](https://www.politico.com) '
-        'and a (😿) in parens and a 👹 '
+        'this is a test of **bold** and *italic* \*text\n'
+        'and a \_named link to [POLITICO](https://www.politico.com) '
+        'and a (😿) in parens and a 👹\n'
         'and a tweet <blockquote class="twitter-tweet" data-lang="en">'
         '<a href="https://www.twitter.com/tweet/123"></a></blockquote> '
         'and a [named link](https://www.politico.com).\n'
-        'Strike ~~this~~ through and another **bold** for measure '
+        'Strike ~~this~~ through ~and another **bold** for measure '
         'and an image '
         '<figure><img href="https://images.com/pic.jpg"/></figure>. '
         'And a channel #channel-name. '

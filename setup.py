@@ -2,14 +2,14 @@ from setuptools import find_packages, setup
 
 setup(
     name='markslack',
-    version='0.0.0-alpha2',
+    version='0.0.0-alpha3',
     description='A Slack message format to Markdown converter',
     url='https://github.com/The-Politico/markslack',
     author='Jon McClure',
     author_email='jon.r.mcclure@gmail.com',
     license='MIT',
     classifiers=[
-        'Development Status :: 2 - Pre-Alpha',
+        'Development Status :: 3 - Alpha',
         'Intended Audience :: Developers',
         'Intended Audience :: Information Technology',
         'License :: OSI Approved :: MIT License',
