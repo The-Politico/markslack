@@ -33,11 +33,11 @@ class MarkSlack(object):
             if extension.lower() in self.image_extensions:
                 if self.image_template:
                     return self.image_template.format(url)
-                return '![]({})'.format(url)
-            return '<{}>'.format(url)
+                return '![]({0})'.format(url)
+            return '<{0}>'.format(url)
 
         self.marked = re.sub(
-            '<({})>'.format(url_pattern), sub_image, self.marked)
+            '<({0})>'.format(url_pattern), sub_image, self.marked)
 
     def mark_channel(self):
         self.marked = re.sub(
@@ -45,19 +45,19 @@ class MarkSlack(object):
 
     def mark_named_hyperlink(self):
         self.marked = re.sub(
-            '<({})\|(.+?)>'.format(url_pattern), r'[\2](\1)', self.marked)
+            '<({0})\|(.+?)>'.format(url_pattern), r'[\2](\1)', self.marked)
         # Slackmark links use a markdown-like syntax
         # to allow users to create named hyperlinks.
         # e.g., [my name]<http://...>
         if self.slackmark_links:
             self.marked = re.sub(
-                '\[([\w ]+?)\]<({})>'.format(url_pattern),
+                '\[([\w ]+?)\]<({0})>'.format(url_pattern),
                 r'[\1](\2)', self.marked)
 
     def mark_unnamed_hyperlink(self):
         if not self.link_templates:
             self.marked = re.sub(
-                '<({})>'.format(url_pattern), r'[\1](\1)', self.marked)
+                '<({0})>'.format(url_pattern), r'[\1](\1)', self.marked)
             return
 
         def sub_link(match):
@@ -66,10 +66,10 @@ class MarkSlack(object):
             for key in link_keys:
                 if key in url:
                     return self.link_templates[key].format(url)
-            return '[{}]({})'.format(url)
+            return '[{0}]({0})'.format(url)
 
         self.marked = re.sub(
-            '<({})>'.format(url_pattern), sub_link, self.marked)
+            '<({0})>'.format(url_pattern), sub_link, self.marked)
 
     def mark_emphasis(self):
         """
@@ -96,7 +96,7 @@ class MarkSlack(object):
         self.marked = ''.join([
             re.sub(r'\_', '\_', line)
             if not re.search(url_pattern, line) else line
-            for line in re.split('({})'.format(url_pattern), self.marked)
+            for line in re.split('({0})'.format(url_pattern), self.marked)
         ])
         # Replace matched pair placeholders
         self.marked = re.sub(r'\|\*', '*', self.marked)
@@ -115,7 +115,7 @@ class MarkSlack(object):
         def sub_user(match):
             return self.user_templates.get(
                 match.group(1),
-                '@{}'.format(match.group(1))
+                '@{0}'.format(match.group(1))
             )
 
         if self.user_templates:
