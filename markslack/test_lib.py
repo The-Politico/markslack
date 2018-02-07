@@ -143,6 +143,19 @@ def test_image_with_template():
     )
 
 
+def test_underscore_in_url():
+    assert marker.mark(
+        '... <http://images.com/my_image.jpg> ...'
+    ) == (
+        '... ![](http://images.com/my_image.jpg) ...'
+    )
+    assert marker.mark(
+        '... <http://site.com/my_thing/> ...'
+    ) == (
+        '... [http://site.com/my_thing/](http://site.com/my_thing/) ...'
+    )
+
+
 def test_complex():
     user_templates = {
         'someuser': '<a href="http://someone.com">Some One</a>'

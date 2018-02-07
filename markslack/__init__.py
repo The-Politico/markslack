@@ -92,7 +92,12 @@ class MarkSlack(object):
         # Escape unmatched, unescaped asterisks
         self.marked = re.sub(r'(?<![\|\\])\*', '\*', self.marked)
         # Escape unmatched, unescaped underscores
-        self.marked = re.sub(r'\_', '\_', self.marked)
+        # Must exclude URLs
+        self.marked = ''.join([
+            re.sub(r'\_', '\_', line)
+            if not re.search(url_pattern, line) else line
+            for line in re.split('({})'.format(url_pattern), self.marked)
+        ])
         # Replace matched pair placeholders
         self.marked = re.sub(r'\|\*', '*', self.marked)
 

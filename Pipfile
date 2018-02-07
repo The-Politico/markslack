@@ -1,0 +1,22 @@
+[[source]]
+
+url = "https://pypi.python.org/simple"
+verify_ssl = true
+name = "pypi"
+
+
+[packages]
+
+certifi = "==2017.11.5"
+chardet = "==3.0.4"
+emoji = "==0.4.5"
+idna = "==2.6"
+py = "==1.4.34"
+pytest = "==3.2.3"
+requests = "==2.18.4"
+"urllib3" = "==1.22"
+websocket-client = "==0.44.0"
+"flake8" = "*"
+
+
+[dev-packages]
