@@ -18,6 +18,13 @@ def test_channel():
         'test #channel-name test'
 
 
+def test_announcement():
+    assert marker.mark('... <!here> ...') == (
+        '... <span class="slack-announcement">@here</span> ...')
+    assert marker.mark('<!channel> ...') == (
+        '<span class="slack-announcement">@channel</span> ...')
+
+
 def test_named_hyperlink():
     assert marker.mark(
         '... <http://site.com|site> ...'

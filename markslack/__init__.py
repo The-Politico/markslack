@@ -11,14 +11,14 @@ url_pattern = (
 class MarkSlack(object):
     def __init__(
         self,
-        slackmark_links=True,
+        markslack_links=True,
         link_templates=None,
         user_templates=None,
         image_template=None,
         image_extensions=['.jpg', '.png'],
     ):
         self.user_templates = user_templates
-        self.slackmark_links = slackmark_links
+        self.markslack_links = markslack_links
         self.image_extensions = image_extensions
         self.image_template = image_template
         self.link_templates = link_templates
@@ -43,13 +43,19 @@ class MarkSlack(object):
         self.marked = re.sub(
             r'<#[a-zA-Z0-9-]+\|(.+?)>', r'#\1', self.marked)
 
+    def mark_announcements(self):
+        self.marked = re.sub(
+            r'<\!(.+?)>',
+            r'<span class="slack-announcement">@\1</span>',
+            self.marked)
+
     def mark_named_hyperlink(self):
         self.marked = re.sub(
             '<({0})\|(.+?)>'.format(url_pattern), r'[\2](\1)', self.marked)
-        # Slackmark links use a markdown-like syntax
+        # Markslack links use a markdown-like syntax
         # to allow users to create named hyperlinks.
         # e.g., [my name]<http://...>
-        if self.slackmark_links:
+        if self.markslack_links:
             self.marked = re.sub(
                 '\[([\w ]+?)\]<({0})>'.format(url_pattern),
                 r'[\1](\2)', self.marked)
@@ -129,6 +135,7 @@ class MarkSlack(object):
         self.mark_emoji()
         self.mark_image()
         self.mark_channel()
+        self.mark_announcements()
         self.mark_named_hyperlink()
         self.mark_unnamed_hyperlink()
         self.mark_user()
