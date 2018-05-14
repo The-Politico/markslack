@@ -57,7 +57,7 @@ class MarkSlack(object):
         # e.g., [my name]<http://...>
         if self.markslack_links:
             self.marked = re.sub(
-                '\[([\w ]+?)\]<({0})>'.format(url_pattern),
+                '\[([\w \']+?)\]<({0})>'.format(url_pattern),
                 r'[\1](\2)', self.marked)
 
     def mark_unnamed_hyperlink(self):

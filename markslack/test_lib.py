@@ -35,6 +35,9 @@ def test_bracket_named_hyperlink():
     assert marker.mark(
         '... [a named link]<http://site.com> ...'
     ) == '... [a named link](http://site.com) ...'
+    assert marker.mark(
+        '... [a named link in\'t]<http://site.com> ...'
+    ) == '... [a named link in\'t](http://site.com) ...'
 
 
 def test_unnamed_hyperlink():
