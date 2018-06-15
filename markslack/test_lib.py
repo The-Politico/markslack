@@ -11,6 +11,12 @@ def test_emoji():
     assert marker.mark(
         '... :thumbsup: test :slightly_smiling_face: ...'
     ) == '... 👍 test 🙂 ...'
+    assert marker.mark(
+        ':fake_emoji: should be gone.'
+    ) == 'should be gone.'
+    assert marker.mark(
+        'white :fake_emoji: space should be preserved :fake_emoji:.'
+    ) == 'white space should be preserved.'
 
 
 def test_channel():
@@ -211,3 +217,11 @@ def test_complex():
         '\n+ Test\n+ A list item\n+ And spaced.'
         '\n--<a href="http://someone.com">Some One</a>'
     )
+
+
+def test_remove_emoji():
+    marker = MarkSlack(replace_emojis=False)
+
+    assert marker.mark(
+        'this is a test of :fake_emoji: and real emoji being removed :cry:.'
+    ) == 'this is a test of and real emoji being removed.'
