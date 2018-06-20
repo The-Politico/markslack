@@ -7,11 +7,15 @@ url_pattern = (
     '|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+'
 )
 
+emoji_pattern = u':[a-zA-Z0-9\+\-_&.ô’Åéãíç()!#*]+:'
+
 
 class MarkSlack(object):
     def __init__(
         self,
         markslack_links=True,
+        replace_emoji=True,
+        remove_bad_emoji=False,
         link_templates=None,
         user_templates=None,
         image_template=None,
@@ -19,12 +23,24 @@ class MarkSlack(object):
     ):
         self.user_templates = user_templates
         self.markslack_links = markslack_links
+        self.replace_emoji = replace_emoji
+        self.remove_bad_emoji = remove_bad_emoji
         self.image_extensions = image_extensions
         self.image_template = image_template
         self.link_templates = link_templates
 
     def mark_emoji(self):
-        self.marked = emoji.emojize(self.marked, use_aliases=True)
+        if self.replace_emoji:
+            self.marked = emoji.emojize(self.marked, use_aliases=True)
+
+        if self.remove_bad_emoji:
+            # Emojis at the end of text
+            p1 = re.compile(u'(\s*)((?:{0})+)(\s*|\.*)$'.format(emoji_pattern))
+            self.marked = p1.sub(r'\3', self.marked)
+
+            # Emojis throughout text
+            p2 = re.compile(u'(\s*)((?:{0})+)(\s*)'.format(emoji_pattern))
+            self.marked = p2.sub(r'\1', self.marked)
 
     def mark_image(self):
         def sub_image(match):
@@ -101,7 +117,8 @@ class MarkSlack(object):
         # Must exclude URLs
         self.marked = ''.join([
             re.sub(r'\_', '\_', line)
-            if not re.search(url_pattern, line) else line
+            if not re.search(url_pattern, line)
+            and not re.search(emoji_pattern, line) else line
             for line in re.split('({0})'.format(url_pattern), self.marked)
         ])
         # Replace matched pair placeholders
