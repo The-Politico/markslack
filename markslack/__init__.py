@@ -117,7 +117,8 @@ class MarkSlack(object):
         # Must exclude URLs
         self.marked = ''.join([
             re.sub(r'\_', '\_', line)
-            if not re.search(url_pattern, line) and not re.search(emoji_pattern, line) else line
+            if not re.search(url_pattern, line)
+            and not re.search(emoji_pattern, line) else line
             for line in re.split('({0})'.format(url_pattern), self.marked)
         ])
         # Replace matched pair placeholders
