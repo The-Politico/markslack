@@ -41,7 +41,7 @@ marker.mark(':thumbsup:')
 # ':thumbsup:'
 ```
 
-There is also an option to remove emoji that haven't been processed.
+There is also an option to remove emoji that weren't supported by the `emoji` package.
 ```python
 marker = MarkSlack(
   remove_bad_emoji=True
@@ -51,8 +51,8 @@ marker.mark(':fake_emoji: are removed, but this one is real :thumbsup:')
 
 # 'are removed, but this one is real 👍'
 ```
+Because `remove_bad_emoji` removes all unprocessed emoji, setting `replace_emoji` to `False` and `remove_bad_emoji` to `True` will remove all emoji.
 
-*Note: Setting `replace_emoji` to `False` and `remove_bad_emoji` to `True` will remove all emoji.*
 
 ### Images
 
