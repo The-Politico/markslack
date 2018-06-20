@@ -2,7 +2,7 @@ from setuptools import find_packages, setup
 
 setup(
     name='markslack',
-    version='0.0.4',
+    version='0.0.5',
     description='A Slack message format to Markdown converter',
     url='https://github.com/The-Politico/markslack',
     author='Jon McClure',
