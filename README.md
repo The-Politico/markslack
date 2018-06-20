@@ -25,9 +25,34 @@ marker.mark('*Hello* world :thumbsup: :slightly_smiling_face:!')
 
 ### Emoji
 
-Emoji support is provided by the [emoji](https://pypi.python.org/pypi/emoji/) package.
+Emoji support is provided by the [emoji](https://pypi.python.org/pypi/emoji/) package. Not all Slack emoji are supported.
 
-Not all Slack emoji are supported.
+Other than default support, emoji can be handled in other ways.
+
+They can be left in their colon-wrapped syntax provided by Slack if you want to handle them with another emoji processor.
+
+```python
+marker = MarkSlack(
+  replace_emoji=False
+)
+
+marker.mark(':thumbsup:')
+
+# ':thumbsup:'
+```
+
+There is also an option to remove emoji that haven't been processed.
+```python
+marker = MarkSlack(
+  remove_bad_emoji=True
+)
+
+marker.mark(':fake_emoji: are removed, but this one is real :thumbsup:')
+
+# 'are removed, but this one is real 👍'
+```
+
+*Note: Setting `replace_emoji` to `False` and `remove_bad_emoji` to `True` will remove all emoji.*
 
 ### Images
 

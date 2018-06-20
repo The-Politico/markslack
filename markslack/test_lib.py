@@ -11,12 +11,10 @@ def test_emoji():
     assert marker.mark(
         '... :thumbsup: test :slightly_smiling_face: ...'
     ) == '... 👍 test 🙂 ...'
+
     assert marker.mark(
-        ':fake_emoji: should be gone.'
-    ) == 'should be gone.'
-    assert marker.mark(
-        'white :fake_emoji: space should be preserved :fake_emoji:.'
-    ) == 'white space should be preserved.'
+        '... :thumbsup: test :fake_emoji: ...'
+    ) == '... 👍 test :fake_emoji: ...'
 
 
 def test_channel():
@@ -219,9 +217,32 @@ def test_complex():
     )
 
 
-def test_remove_emoji():
-    marker = MarkSlack(replace_emojis=False)
+def test_no_replace_emoji():
+    marker = MarkSlack(replace_emoji=False)
+    
+    assert marker.mark(
+        'this is a test of emoji being left alone :cry:.'
+    ) == 'this is a test of emoji being left alone :cry:.'
+
+
+def test_remove_no_replace_emoji():
+    marker = MarkSlack(replace_emoji=False, remove_bad_emoji=True)
 
     assert marker.mark(
         'this is a test of :fake_emoji: and real emoji being removed :cry:.'
     ) == 'this is a test of and real emoji being removed.'
+
+    assert marker.mark(
+        ':fake_emoji: should be gone.'
+    ) == 'should be gone.'
+    assert marker.mark(
+        'white :fake_emoji: space should be preserved :fake_emoji:.'
+    ) == 'white space should be preserved.'
+
+
+def test_remove_and_replace_emoji():
+    marker = MarkSlack(remove_bad_emoji=True)
+
+    assert marker.mark(
+        'this is a test of only :fake_emoji: being removed :thumbsup:'
+    ) == 'this is a test of only being removed 👍'
