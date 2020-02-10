@@ -75,13 +75,14 @@ class MarkSlack(object):
         self.marked = re.sub(
             "<({0})".format(url_pattern), r"<~\1~", self.marked
         )
+
         # If a URL name follows a ~-wrapped URL, replace the URL and name
         # with markdown
-        self.marked = re.sub(
-            "<~([^~]+)~\|([\w|\s]+)>", r"[\2](\1)", self.marked
-        )
+        self.marked = re.sub("<~([^~]+)~\|(.+)>", r"[\2](\1)", self.marked)
+
         # If a URL has no name, remove the ~ wraps
         self.marked = re.sub("<~([^~]+)~>", r"<\1>", self.marked)
+
         # Markslack links use a markdown-like syntax
         # to allow users to create named hyperlinks.
         # e.g., [my name]<http://...>
@@ -90,6 +91,22 @@ class MarkSlack(object):
                 "\[([\w ']+?)\]<({0})>".format(url_pattern),
                 r"[\1](\2)",
                 self.marked,
+            )
+
+        # Handle Link Templates
+        if self.link_templates:
+
+            def sub_link(match):
+                link_keys = list(self.link_templates.keys())
+                name = match.group(1)
+                url = match.group(2)
+                for key in link_keys:
+                    if key in url:
+                        return self.link_templates[key].format(url)
+                return "[{0}]({1})".format(name, url)
+
+            self.marked = re.sub(
+                "\[(.+)\]\((.+)\)".format(url_pattern), sub_link, self.marked
             )
 
     def mark_unnamed_hyperlink(self):

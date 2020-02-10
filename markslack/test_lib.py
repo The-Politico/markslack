@@ -127,6 +127,24 @@ def test_unnamed_hyperlink_with_template():
     )
 
 
+def test_named_hyperlink_with_template():
+    tweet_template = (
+        '<blockquote class="twitter-tweet" data-lang="en">'
+        '<a href="{}"></a></blockquote>'
+    )
+
+    link_templates = {"twitter.com": tweet_template}
+    marker = MarkSlack(link_templates=link_templates)
+    assert marker.mark(
+        "... <https://twitter.com/jack/status/20"
+        "|https://twitter.com/jack/status/20> ..."
+    ) == (
+        '... <blockquote class="twitter-tweet" data-lang="en">'
+        '<a href="https://twitter.com/jack/status/20"></a>'
+        "</blockquote> ..."
+    )
+
+
 def test_emphasis():
     assert (
         marker.mark("a *test* \*of\* *bolding a string* and *extra")

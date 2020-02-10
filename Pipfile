@@ -20,3 +20,6 @@ websocket-client = "==0.44.0"
 
 
 [dev-packages]
+
+[requires]
+python_version = "3.6"
